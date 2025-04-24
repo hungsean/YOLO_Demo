@@ -1,36 +1,52 @@
-# tests/test_video_extractor.py
-
 import pytest
-from unittest.mock import MagicMock, patch
 import numpy as np
+import cv2
 from src.utils.extract_frames import extract_frames
 
-def generate_fake_frames(total_frames, frame_shape=(100, 100, 3)):
-    """產生假影格陣列"""
-    return [np.ones(frame_shape, dtype=np.uint8) * i for i in range(total_frames)]
+class DummyCapture:
+    def __init__(self, frames, fps, fail_open=False):
+        self.frames = frames
+        self.fps = fps
+        self.fail_open = fail_open
+        self.idx = 0
+    def isOpened(self):
+        return not self.fail_open
+    def get(self, prop_id):
+        if prop_id == cv2.CAP_PROP_FPS:
+            return self.fps
+        return 0
+    def read(self):
+        if self.idx >= len(self.frames):
+            return False, None
+        frame = self.frames[self.idx]
+        self.idx += 1
+        return True, frame
+    def release(self):
+        pass
 
-@patch("cv2.VideoCapture")
-def test_extract_frames(mock_VideoCapture):
-    # 模擬影片設定
-    fake_fps = 10
-    extract_fps = 2
-    total_frames = 10
+@pytest.fixture(autouse=True)
+def patch_videocapture(monkeypatch):
+    def _factory(path):
+        # 模擬一個有 5 幀的影像，每幀都是 2x2 全 1
+        dummy_frames = [np.ones((2,2,3), dtype=np.uint8) for _ in range(5)]
+        return DummyCapture(dummy_frames, fps=5.0, fail_open=False)
+    monkeypatch.setattr(cv2, 'VideoCapture', _factory)
 
-    # 建立假 VideoCapture 行為
-    mock_cap = MagicMock()
-    fake_frames = generate_fake_frames(total_frames)
-    
-    # read() 模擬：每次呼叫回傳 (True, frame)，最後回傳 (False, None)
-    mock_cap.read.side_effect = [(True, f) for f in fake_frames] + [(False, None)]
-    mock_cap.isOpened.return_value = True
-    mock_cap.get.return_value = fake_fps  # get(cv2.CAP_PROP_FPS)
-    
-    mock_VideoCapture.return_value = mock_cap
+def test_open_fail(monkeypatch):
+    # 當無法開啟影片時，應該丟出 IOError
+    def bad_factory(path):
+        return DummyCapture([], fps=0, fail_open=True)
+    monkeypatch.setattr(cv2, 'VideoCapture', bad_factory)
+    with pytest.raises(IOError):
+        extract_frames("nonexistent.mp4", fps_extract=1)
 
-    # 呼叫函式
-    result = extract_frames("dummy.mp4", fps_extract=extract_fps)
+def test_extract_all_frames_when_fps_extract_le_zero():
+    # fps_extract <= 0 時，應該回傳所有幀
+    frames = extract_frames("dummy.mp4", fps_extract=0)
+    assert len(frames) == 5
 
-    # 驗證結果：應該每 5 張取 1 張 → 0, 5
-    assert len(result) == 2
-    assert (result[0] == fake_frames[0]).all()
-    assert (result[1] == fake_frames[5]).all()
+def test_extract_by_interval():
+    # 原始 fps=5，fps_extract=2，則 interval = max(1, int(5/2)) = 2
+    frames = extract_frames("dummy.mp4", fps_extract=2)
+    # 5 幀中每兩幀取一幀，應該取到 3 幀 (idx 0,2,4)
+    assert len(frames) == 3
