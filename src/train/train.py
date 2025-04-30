@@ -4,8 +4,8 @@ from datetime import datetime
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, required=True, help='Path to data.yaml')
-    parser.add_argument('--model', type=str, help='Pretrained model path')
+    parser.add_argument('-d', '--data', type=str, required=True, help='Path to data.yaml')
+    parser.add_argument('-m', '--model', type=str, help='Pretrained model path')
     parser.add_argument('--epochs', type=int, default=100, help='Number of training epochs')
     parser.add_argument('--imgsz', type=int, default=640, help='Image size')
     parser.add_argument('--batch', type=int, default=16, help='Batch size')

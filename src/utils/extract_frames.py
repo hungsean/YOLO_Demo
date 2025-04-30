@@ -83,7 +83,7 @@ def main():
     parser = argparse.ArgumentParser(description="Extract frames from video based on visual difference")
     parser.add_argument("-i", "--input_file", help="Path to the input video file")
     parser.add_argument("-o", "--output_dir", help="Directory to save extracted images")
-    parser.add_argument("--threshold", type=float, default=0.5,
+    parser.add_argument("-t", "--threshold", type=float, default=0.5,
                         help="SSIM similarity threshold (0-1), lower means more sensitive to changes")
     args = parser.parse_args()
 
