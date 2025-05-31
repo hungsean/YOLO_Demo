@@ -22,7 +22,7 @@ def main():
         epochs=args.epochs, 
         imgsz=args.imgsz, 
         batch=args.batch, 
-        workers=2,
+        workers=0,
         name=f"yolo_{timestamp}"
         )
 
