@@ -10,9 +10,8 @@ wheels/
 # Virtual environments
 .venv
 
-datasets
+datasets/video
 output
 models
-runs
+runs/detect
 yolo11n.pt
-config

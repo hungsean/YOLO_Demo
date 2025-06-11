@@ -1,0 +1,19 @@
+train: 
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\YOLO-Demo-Train\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250429205915_output_1\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250529205157-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250529215800-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250530150441-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250530155010-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250530183410-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250531153606-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250531170754-label\images
+val: 
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250529212749-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250530162635-label\images
+  - D:\Programming\Python\machine-learning\YOLO_Demo\datasets\VID20250531145019-label\images
+
+names:
+  0: photo-book
+  1: wireless-earphone
+  2: yanami-anna
